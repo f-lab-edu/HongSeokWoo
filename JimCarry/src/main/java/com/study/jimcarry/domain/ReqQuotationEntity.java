@@ -33,9 +33,6 @@ public class ReqQuotationEntity {
 
 	// 이사 예정일자
 	private Date moveDt;
-
-	// 견적요청 금액
-	private BigDecimal quotationAmount;
 	
 	// 건물 종류 (빌라/연립, 오피스텔, 주택, 아파트, 상가/사무실)
 	private String buildingType;
@@ -51,6 +48,9 @@ public class ReqQuotationEntity {
 
 	// 짐 박스 갯수
 	private int boxCount;
+
+	// 견적요청 금액
+	private BigDecimal quotationAmount;
 	
 	//생성자
 	private Integer cid;

@@ -8,6 +8,8 @@ import com.fasterxml.uuid.Generators;
 import java.util.UUID;
 
 import com.study.jimcarry.type.QuotationStatus;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,8 +39,8 @@ public class ReqQuotationService {
 
 	/**
 	 * 견적요청서 작성
-	 * 
-	 * @param reqQuotationEntity
+	 * @param reqQuotation
+	 * @param moveItemList
 	 * @return
 	 */
 	@Transactional
@@ -62,7 +64,7 @@ public class ReqQuotationService {
 							.quotationReqNo(uuidVer1)
 							.furnitureId(dto.getFurnitureId())
 							.optionValId(dto.getOptionValId())
-							.qty(dto.getQty())
+							.quantity(dto.getQuantity())
 							.cid(0)
 							.build());
 		}
@@ -79,8 +81,8 @@ public class ReqQuotationService {
 
 	/**
 	 * 견적요청서 수정
-	 * 
-	 * @param reqQuotationEntity
+	 * @param updateReqQuotation
+	 * @param quotationId
 	 * @return
 	 */
 	@Transactional
@@ -138,7 +140,7 @@ public class ReqQuotationService {
 
 	/**
 	 * 견적요청서 삭제
-	 * 
+	 *
 	 * @param quotationId
 	 * @return
 	 */
@@ -155,36 +157,46 @@ public class ReqQuotationService {
 
 	/**
 	 * 견적요청서 전체 조회
-	 * 
+	 *
 	 * @return
 	 */
+	@Cacheable(value="ReqQuotationListCache")
 	public List<ReqQuotationDTO> getReqQuotationList() {
-		List<ReqQuotationEntity> findList = reqQuotationMapper.selectAllReqQuotations();
+		List<ReqQuotationEntity> reqQuotations = reqQuotationMapper.selectAllReqQuotations();
 		List<ReqQuotationDTO> reqQuotationList = new ArrayList<>();
-		for (ReqQuotationEntity entity : findList) {
-			reqQuotationList.add(ReqQuotationDTO.builder().quotationReqNo(entity.getQuotationReqNo())
-					.custId(entity.getCustId()).pickupAddr(entity.getPickupAddr())
-					.deliveryAddr(entity.getDeliveryAddr()).moveDt(entity.getMoveDt())
-					.buildingType(entity.getBuildingType()).roomStructure(entity.getRoomStructure())
-					.houseSize(entity.getHouseSize()).hasElevator(entity.isHasElevator()).boxCount(entity.getBoxCount())
-					.quotationAmount(entity.getQuotationAmount()).status(entity.getStatus()).build());
+		for (ReqQuotationEntity entity : reqQuotations) {
+			reqQuotationList.add(ReqQuotationDTO.builder()
+					.quotationReqNo(entity.getQuotationReqNo())
+					.custId(entity.getCustId())
+					.pickupAddr(entity.getPickupAddr())
+					.deliveryAddr(entity.getDeliveryAddr())
+					.moveDt(entity.getMoveDt())
+					.buildingType(entity.getBuildingType())
+					.roomStructure(entity.getRoomStructure())
+					.houseSize(entity.getHouseSize())
+					.hasElevator(entity.isHasElevator())
+					.boxCount(entity.getBoxCount())
+					.quotationAmount(entity.getQuotationAmount())
+					.status(entity.getStatus())
+					.build());
 		}
 		return reqQuotationList;
 	}
 
 	/**
 	 * 사용자별 견적요청서 조회
-	 * 
+	 *
 	 * @param customerId
 	 * @return
 	 */
+	@Cacheable(value="ReqQuotationByUser")
 	public ReqQuotationDTO getReqQuotationByUser(String customerId) {
-
 		ReqQuotationEntity entity = Optional.ofNullable(reqQuotationMapper.selectReqQuotationByUser(customerId))
-		.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND.getCode(), ErrorCode.NOT_FOUND.getMessage()));
+				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND.getCode(), ErrorCode.NOT_FOUND.getMessage()));
 
 		return ReqQuotationDTO.builder()
 				.quotationReqNo(entity.getQuotationReqNo())
+				.quotationDt(entity.getQuotationDt())
 				.custId(entity.getCustId())
 				.pickupAddr(entity.getPickupAddr())
 				.deliveryAddr(entity.getDeliveryAddr())
@@ -196,16 +208,18 @@ public class ReqQuotationService {
 				.boxCount(entity.getBoxCount())
 				.quotationAmount(entity.getQuotationAmount())
 				.status(entity.getStatus())
+				.version(entity.getVersion())
 				.build();
 	}
 
 	/**
 	 * 견적상태 갱신
-	 * 
+	 *
 	 * @param reqQuotationId
 	 * @param status
 	 * @return
 	 */
+	@Cacheable(value="UpdateReqQuotationStatus")
 	public int updateReqQuotationStatus(String reqQuotationId, String status) {
 
 		Optional<ReqQuotationEntity> optionalEntity = Optional

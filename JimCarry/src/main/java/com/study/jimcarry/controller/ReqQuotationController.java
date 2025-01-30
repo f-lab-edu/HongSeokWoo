@@ -1,6 +1,5 @@
 package com.study.jimcarry.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.study.jimcarry.api.MoveItemRequest;
 import com.study.jimcarry.api.ReqQuotaionResponse;
 import com.study.jimcarry.api.ReqQuotationRequest;
 import com.study.jimcarry.exception.CustomException;
@@ -39,7 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ReqQuotationController {
 
-//    private final Validator validator;
+	//    private final Validator validator;
 	private final ReqQuotationService reqQuotationService;
 //    private final ModelMapper modelMapper;
 
@@ -52,11 +50,8 @@ public class ReqQuotationController {
 
 	/**
 	 * 견적요청서 저장
-	 * 
-	 * @param reqeust
-	 * @param response
+	 * @param request
 	 * @return
-	 * @throws Exception
 	 */
 	@PostMapping
 	@Tag(name = "ReqQuotaion")
@@ -77,12 +72,12 @@ public class ReqQuotationController {
 		 * TO-BE
 		 */
 		List<MoveItemDTO> dtoList = request.getMoveItemList().stream()
-		        .map(mvReq -> MoveItemDTO.builder()
-		                .furnitureId(mvReq.getFurnitureId())
-		                .optionValId(mvReq.getOptionValId())
-		                .qty(mvReq.getQuantity())
-		                .build()) // Close the builder here
-		        .collect(Collectors.toList()); // Collect outside the map
+				.map(mvReq -> MoveItemDTO.builder()
+						.furnitureId(mvReq.getFurnitureId())
+						.optionValId(mvReq.getOptionValId())
+						.quantity(mvReq.getQuantity())
+						.build()) // Close the builder here
+				.collect(Collectors.toList()); // Collect outside the map
 
 		return ResponseEntity.ok(ReqQuotaionResponse.builder()
 				.results(reqQuotationService.saveReqQuotation(
@@ -97,17 +92,15 @@ public class ReqQuotationController {
 
 	/**
 	 * 견적요청서 수정
-	 * 
-	 * @param reqeust
-	 * @param response
+	 * @param request
+	 * @param quotationId
 	 * @return
-	 * @throws Exception
 	 */
 	@PutMapping(value = "/{quotationid}") // PUT방식은 전체의 리소스를 교체 할 때 사용하고, PATCH는 리소스의 일부분을 교체 할 때 사용.
 	@Tag(name = "ReqQuotaion")
 	@Operation(summary = "Modify ReqQuotaion", description = "견적요청서 수정")
 	public ResponseEntity<ReqQuotaionResponse> modifyReqQuotation(@RequestBody ReqQuotationRequest request,
-			@PathVariable("quotationid") String quotationId) {
+																  @PathVariable("quotationid") String quotationId) {
 
 		// Optional을 사용하여 유효성 체크
 		Optional.ofNullable(quotationId).filter(id -> !id.trim().isEmpty()).orElseThrow(
@@ -126,11 +119,8 @@ public class ReqQuotationController {
 
 	/**
 	 * 견적요청서 삭제
-	 * 
-	 * @param quotationid
-	 * @param response
+	 * @param quotationId
 	 * @return
-	 * @throws Exception
 	 */
 	@DeleteMapping(value = "/{quotationid}")
 	@Tag(name = "ReqQuotaion")
@@ -142,10 +132,7 @@ public class ReqQuotationController {
 
 	/**
 	 * 견적요청서 전체 조회
-	 * 
-	 * @param response
 	 * @return
-	 * @throws Exception
 	 */
 	@GetMapping("/list")
 	@Tag(name = "ReqQuotaion")
@@ -157,11 +144,8 @@ public class ReqQuotationController {
 
 	/**
 	 * 사용자별 견적요청서 조회
-	 * 
 	 * @param customerId
-	 * @param response
 	 * @return
-	 * @throws Exception
 	 */
 	@GetMapping(value = "/customers/{customerid}")
 	@Tag(name = "ReqQuotaion")
@@ -173,7 +157,7 @@ public class ReqQuotationController {
 
 	/**
 	 * 견적상태 갱신
-	 * 
+	 *
 	 * @param reqeust
 	 * @return
 	 */
@@ -181,7 +165,7 @@ public class ReqQuotationController {
 	@Tag(name = "ReqQuotaion")
 	@Operation(summary = "update ReqQuotaion isAccepted", description = "견적상태 갱신")
 	public ResponseEntity<ReqQuotaionResponse> patchQuotationIsAccepted(@RequestBody ReqQuotationRequest reqeust,
-			@PathVariable("quotationid") String quotationId) {
+																		@PathVariable("quotationid") String quotationId) {
 
 		// Optional을 사용하여 유효성 체크
 		Optional.ofNullable(quotationId).filter(id -> !id.trim().isEmpty()).orElseThrow(

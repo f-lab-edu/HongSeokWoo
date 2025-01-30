@@ -43,18 +43,18 @@ public interface ReqQuotationMapper {
 	 * @return
 	 */
 	ReqQuotationEntity selectReqQuotationByUser(String customerId);
-	
+
 	/**
 	 * 견적상태 갱신
 	 * @param reqQuotationId
-	 * @param isAccepted
+	 * @param status
 	 * @return
 	 */
 	   int updateReqQuotationStatus(@Param("quotationReqNo") String reqQuotationId, @Param("status") String status);
-	
+
 	/**
 	 * 견적요청서 조회
-	 * @param customerId
+	 * @param reqQuotationId
 	 * @return
 	 */
 	ReqQuotationEntity selectReqQuotation(String reqQuotationId);

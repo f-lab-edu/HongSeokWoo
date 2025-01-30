@@ -17,6 +17,9 @@ spring:
   jackson:
     serialization:
       write-dates-as-timestamps: false
+  cache: # Cache 설정
+    jcache:
+      config: classpath:ehcache.xml
   datasource:
     url: jdbc:mariadb://localhost:3306/jimCarry  # 데이터베이스 URL
     username: root                                  # DB 사용자명
@@ -24,6 +27,7 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver     # MariaDB JDBC 드라이버
     hikari:
       maximum-pool-size: 10                         # 커넥션 풀 크기 설정
+
 
 mybatis:
   type-aliases-package: com.study.jimcarry.domain

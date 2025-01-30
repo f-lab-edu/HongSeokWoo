@@ -16,23 +16,23 @@ import lombok.Getter;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL) // null 제외
 public class MoveItemDTO {
-	
+
 	// 견적요청_ID
 	@Schema(name = "quotationReqNo", description = "견적요청 번호")
 	private String quotationReqNo;
-	
+
 	//고객 아이디
 	@Schema(name="furnitureId", description="가구 ID") //Swagger/OpenAPI 문서를 자동 생성
 	private Integer furnitureId;
-	
-    // 출발지 주소
-	@Schema(name="optionValId", description="옵션 명 ID") //Swagger/OpenAPI 문서를 자동 생성
-    private Integer optionValId;
 
 	// 출발지 주소
-	@Schema(name="qty", description="가구 수량") //Swagger/OpenAPI 문서를 자동 생성
-    private Integer qty;
-	
+	@Schema(name="optionValId", description="옵션 명 ID") //Swagger/OpenAPI 문서를 자동 생성
+	private Integer optionValId;
+
+	// 출발지 주소
+	@Schema(name="quantity", description="가구 수량") //Swagger/OpenAPI 문서를 자동 생성
+	private Integer quantity;
+
 	@Schema(name="cid", description="생성자") //Swagger/OpenAPI 문서를 자동 생성
-    private String cid;
+	private String cid;
 }
